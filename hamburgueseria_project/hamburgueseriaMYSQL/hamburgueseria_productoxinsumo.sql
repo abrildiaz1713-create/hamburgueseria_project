@@ -1,6 +1,6 @@
 use hamburgueseria;
 
-CREATE TABLE productoxinsumo (
+CREATE TABLE producto_insumo (
     id_producto_insumo INT AUTO_INCREMENT PRIMARY KEY,
     id_producto INT NOT NULL,
     id_insumo INT NOT NULL,
