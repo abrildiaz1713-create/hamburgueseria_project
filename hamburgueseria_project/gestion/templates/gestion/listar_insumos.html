@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo|default:"Gestión de Insumos" }} - Hamburguesería</title>
+    <!-- Bootstrap 5 CSS para diseño profesional -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Iconos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .table-hover tbody tr:hover { background-color: #f1f3f5; }
+        .badge-disponible { background-color: #198754; }
+        .badge-por-vencer { background-color: #ffc107; color: #000; }
+        .badge-agotado { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <!-- Navegación Superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shop me-2"></i>Hamburguesería Admin</a>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        
+        <!-- Encabezado y Acciones Principales -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h2 class="fw-bold mb-0 text-dark">{{ titulo|default:"Gestión de Insumos" }}</h2>
+                <p class="text-muted small mb-0">Control centralizado de existencias y materia prima.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'crear_insumo' %}" class="btn btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Agregar Insumo
+                </a>
+                {% if es_inactivo %}
+                    <a href="{% url 'listar_insumos' %}" class="btn btn-outline-success">
+                        <i class="bi bi-check-circle me-1"></i> Ver Insumos Activos
+                    </a>
+                {% else %}
+                    <a href="{% url 'listar_insumos_inactivos' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-archive me-1"></i> Ver Inactivos / Agotados
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tabla de Datos -->
+        <div class="card card-custom p-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="text-center">ID</th>
+                            <th scope="col">Nombre del Insumo</th>
+                            <th scope="col" class="text-center">Stock Actual</th>
+                            <th scope="col" class="text-center">Estado</th>
+                            <th scope="col" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for insumo in insumos %}
+                        <tr>
+                            <td class="text-center fw-bold text-secondary">#{{ insumo.insumo_id }}</td>
+                            <td>
+                                <span class="fw-semibold text-dark">{{ insumo.nombre_insumo }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border px-3 py-2">
+                                    {{ insumo.stock_actual }} {{ insumo.unidad_medida }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {% if insumo.estado == 'disponible' %}
+                                    <span class="badge badge-disponible px-3 py-2">Disponible</span>
+                                {% elif insumo.estado == 'por vencer' %}
+                                    <span class="badge badge-por-vencer px-3 py-2">Por Vencer</span>
+                                {% else %}
+                                    <span class="badge badge-agotado px-3 py-2">Agotado / Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <!-- Botón Ojo (Ver Detalle) -->
+                                    <a href="{% url 'detalle_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-info" title="Ver Detalle">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    {% if es_inactivo %}
+                                        <!-- Botón Reactivar -->
+                                        <a href="{% url 'activar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-success" title="Reactivar">
+                                            <i class="bi bi-check-lg"></i> Reactivar
+                                        </a>
+                                    {% else %}
+                                        <!-- Botón Editar -->
+                                        <a href="{% url 'editar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <!-- Botón Desactivar -->
+                                        <a href="{% url 'desactivar_insumo' insumo.insumo_id %}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           title="Desactivar" 
+                                           onclick="return confirm('¿Desea desactivar este insumo?');">
+                                            <i class="bi bi-slash-circle"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                                No hay insumos registrados en esta sección.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

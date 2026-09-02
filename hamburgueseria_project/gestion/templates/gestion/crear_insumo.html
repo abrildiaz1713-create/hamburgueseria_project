@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Insumo - Hamburguesería</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navegación Superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'listar_insumos' %}"><i class="bi bi-shop me-2"></i>Hamburguesería Admin</a>
+        </div>
+    </nav>
+
+    <div class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-plus-circle text-primary me-2"></i>Agregar Insumo</h4>
+                        <span class="badge bg-primary">Nuevo Registro</span>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            <!-- Nombre del Insumo -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary">Nombre del Insumo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
+                                    <input type="text" class="form-control" name="nombre_insumo" placeholder="Ej. Pan de Hamburguesa" required>
+                                </div>
+                            </div>
+
+                            <!-- Filas dobles para Stock -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary">Stock Actual</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-boxes"></i></span>
+                                        <input type="number" class="form-control" name="stock_actual" placeholder="Ej. 50" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary">Stock Mínimo</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-exclamation-triangle"></i></span>
+                                        <input type="number" class="form-control" name="stock_minimo" placeholder="Ej. 10" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Costo y Unidad -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary">Costo Unitario ($)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-currency-dollar"></i></span>
+                                        <input type="number" step="0.01" class="form-control" name="costo_unitario" placeholder="Ej. 1500.00" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary">Unidad de Medida</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-rulers"></i></span>
+                                        <input type="text" class="form-control" name="unidad_medida" placeholder="Ej. Unidades, Kg, Gramos" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fecha Vencimiento y Estado -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary">Fecha de Vencimiento</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-calendar-event"></i></span>
+                                        <input type="date" class="form-control" name="fecha_vencimiento">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary">Estado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-info-circle"></i></span>
+                                        <select class="form-select" name="estado">
+                                            <option value="disponible" selected>Disponible</option>
+                                            <option value="por vencer">Por Vencer</option>
+                                            <option value="agotado">Agotado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="d-flex justify-content-between align-items-center pt-2">
+                                <a href="{% url 'listar_insumos' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary fw-bold px-4">
+                                    <i class="bi bi-check-lg me-1"></i> Guardar Insumo
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
