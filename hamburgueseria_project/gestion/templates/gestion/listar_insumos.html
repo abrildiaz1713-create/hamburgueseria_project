@@ -3,125 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titulo|default:"Gestión de Insumos" }} - Hamburguesería</title>
-    <!-- Bootstrap 5 CSS para diseño profesional -->
+    <title>{{ titulo }} - Hamburguesería</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos de Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body { background-color: #f8f9fa; }
-        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .table-hover tbody tr:hover { background-color: #f1f3f5; }
-        .badge-disponible { background-color: #198754; }
-        .badge-por-vencer { background-color: #ffc107; color: #000; }
-        .badge-agotado { background-color: #dc3545; }
-    </style>
 </head>
-<body>
+<body class="bg-light">
 
     <!-- Navegación Superior -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shop me-2"></i>Hamburguesería Admin</a>
+            <a class="navbar-brand fw-bold" href="{% url 'listar_insumos' %}"><i class="bi bi-shop me-2"></i>Hamburguesería Admin</a>
         </div>
     </nav>
 
-    <div class="container pb-5">
-        
-        <!-- Encabezado y Acciones Principales -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div>
-                <h2 class="fw-bold mb-0 text-dark">{{ titulo|default:"Gestión de Insumos" }}</h2>
-                <p class="text-muted small mb-0">Control centralizado de existencias y materia prima.</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{% url 'crear_insumo' %}" class="btn btn-primary shadow-sm">
-                    <i class="bi bi-plus-lg me-1"></i> Agregar Insumo
-                </a>
-                {% if es_inactivo %}
-                    <a href="{% url 'listar_insumos' %}" class="btn btn-outline-success">
-                        <i class="bi bi-check-circle me-1"></i> Ver Insumos Activos
+    <div class="container py-3">
+        <!-- BLOQUE DE MENSAJES / ALERTAS -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Encabezado y Acciones -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center py-3">
+                <h3 class="fw-bold text-dark mb-3 mb-md-0"><i class="bi bi-boxes text-primary me-2"></i>{{ titulo }}</h3>
+                <div>
+                    <a href="{% url 'crear_insumo' %}" class="btn btn-primary fw-bold me-2">
+                        <i class="bi bi-plus-lg me-1"></i> + Agregar Nuevo Insumo
                     </a>
-                {% else %}
-                    <a href="{% url 'listar_insumos_inactivos' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-archive me-1"></i> Ver Inactivos / Agotados
-                    </a>
-                {% endif %}
+                    {% if es_inactivo %}
+                        <a href="{% url 'listar_insumos' %}" class="btn btn-outline-success">
+                            <i class="bi bi-check-circle me-1"></i> Ver Insumos Activos
+                        </a>
+                    {% else %}
+                        <a href="{% url 'listar_insumos_inactivos' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-archive me-1"></i> Ver Insumos Desactivados
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- Tabla de Datos -->
-        <div class="card card-custom p-3">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col" class="text-center">ID</th>
-                            <th scope="col">Nombre del Insumo</th>
-                            <th scope="col" class="text-center">Stock Actual</th>
-                            <th scope="col" class="text-center">Estado</th>
-                            <th scope="col" class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for insumo in insumos %}
-                        <tr>
-                            <td class="text-center fw-bold text-secondary">#{{ insumo.insumo_id }}</td>
-                            <td>
-                                <span class="fw-semibold text-dark">{{ insumo.nombre_insumo }}</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-light text-dark border px-3 py-2">
-                                    {{ insumo.stock_actual }} {{ insumo.unidad_medida }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                {% if insumo.estado == 'disponible' %}
-                                    <span class="badge badge-disponible px-3 py-2">Disponible</span>
-                                {% elif insumo.estado == 'por vencer' %}
-                                    <span class="badge badge-por-vencer px-3 py-2">Por Vencer</span>
-                                {% else %}
-                                    <span class="badge badge-agotado px-3 py-2">Agotado / Inactivo</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <!-- Botón Ojo (Ver Detalle) -->
-                                    <a href="{% url 'detalle_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-info" title="Ver Detalle">
-                                        <i class="bi bi-eye"></i>
+        <!-- Tabla de Insumos -->
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-3">ID</th>
+                                <th>Nombre del Insumo</th>
+                                <th>Stock Actual</th>
+                                <th>Stock Mínimo</th>
+                                <th>Costo Unitario</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for insumo in insumos %}
+                            <tr>
+                                <td class="ps-3 fw-bold text-secondary">#{{ insumo.insumo_id }}</td>
+                                <td class="fw-bold text-dark">{{ insumo.nombre_insumo }}</td>
+                                <td>
+                                    <span class="badge bg-info text-dark font-monospace fs-6">
+                                        {{ insumo.stock_actual }} {{ insumo.unidad_medida }}
+                                    </span>
+                                </td>
+                                <td>{{ insumo.stock_minimo }} {{ insumo.unidad_medida }}</td>
+                                <td class="text-success fw-bold">${{ insumo.costo_unitario }}</td>
+                                <td>
+                                    <span class="badge {% if insumo.estado == 'disponible' %}bg-success{% elif insumo.estado == 'por vencer' %}bg-warning text-dark{% else %}bg-danger{% endif %} text-capitalize">
+                                        {{ insumo.estado }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'detalle_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-info me-1" title="Ver Detalle">
+                                        <i class="bi bi-eye-fill"></i> Ver
                                     </a>
-
+                                    
                                     {% if es_inactivo %}
-                                        <!-- Botón Reactivar -->
-                                        <a href="{% url 'activar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-success" title="Reactivar">
-                                            <i class="bi bi-check-lg"></i> Reactivar
+                                        <a href="{% url 'activar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-success" title="Activar">
+                                            <i class="bi bi-check-lg"></i> Activar
                                         </a>
                                     {% else %}
-                                        <!-- Botón Editar -->
-                                        <a href="{% url 'editar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-warning" title="Editar">
-                                            <i class="bi bi-pencil"></i>
+                                        <a href="{% url 'editar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-warning text-dark me-1" title="Editar">
+                                            <i class="bi bi-pencil-fill"></i> Editar
                                         </a>
-                                        <!-- Botón Desactivar -->
-                                        <a href="{% url 'desactivar_insumo' insumo.insumo_id %}" 
-                                           class="btn btn-sm btn-outline-danger" 
-                                           title="Desactivar" 
-                                           onclick="return confirm('¿Desea desactivar este insumo?');">
-                                            <i class="bi bi-slash-circle"></i>
+                                        <a href="{% url 'desactivar_insumo' insumo.insumo_id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Desea desactivar este insumo?');" title="Desactivar">
+                                            <i class="bi bi-slash-circle-fill"></i> Desactivar
                                         </a>
                                     {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
-                                <i class="bi bi-inbox display-6 d-block mb-2"></i>
-                                No hay insumos registrados en esta sección.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    No hay insumos registrados en esta lista.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
