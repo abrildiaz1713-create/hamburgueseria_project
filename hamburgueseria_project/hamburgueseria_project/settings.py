@@ -2,7 +2,12 @@ import os
 import pymysql
 pymysql.install_as_MySQLdb()
 from pathlib import Path
+from dotenv import load_dotenv
 
+# Directorio base del proyecto
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 # Directorio base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -59,11 +64,11 @@ WSGI_APPLICATION = 'hamburgueseria_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hamburgueseria',    # Nombre de tu base de datos[cite: 3]
-        'USER': 'root',             # Usuario de MySQL (por defecto en XAMPP es root)
-        'PASSWORD': '1234',             # Tu clave de MySQL (déjalo vacío '' si no usas clave)
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME', 'hamburgueseria'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
